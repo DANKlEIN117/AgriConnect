@@ -29,7 +29,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return {"message": "Welcome to AgriConnect API 🚀"}
+        return {"message": "Welcome to AgriConnect API"}
 
     return app
     
