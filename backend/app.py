@@ -25,7 +25,11 @@ def create_app():
         return {"message": "Welcome to AgriConnect API 🚀"}
     
     from routes.produce_routes import produce_bp
-    app.register_blueprint(produce_bp, url_prefix="/")
+    app.register_blueprint(produce_bp)
+
+    
+
+
 
 
     return app
