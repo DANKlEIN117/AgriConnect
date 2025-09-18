@@ -27,15 +27,16 @@ def create_app():
     from routes.produce_routes import produce_bp
     app.register_blueprint(produce_bp)
 
-    
+    from routes.protected_routes import protected_bp
+    app.register_blueprint(protected_bp)
+
+    from routes.role_routes import role_bp
+    app.register_blueprint(role_bp)
 
 
 
 
     return app
-
-    
-
 
 if __name__ == "__main__":
     app = create_app()
