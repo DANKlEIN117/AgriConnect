@@ -33,8 +33,14 @@ def create_app():
     from routes.role_routes import role_bp
     app.register_blueprint(role_bp)
 
+    from routes.admin_routes import admin_bp
+    app.register_blueprint(admin_bp)
 
+    from routes.admin import admin_bp
+    app.register_blueprint(admin_bp)
 
+    from routes.product import product_bp
+    app.register_blueprint(product_bp, url_prefix="/products")
 
     return app
 
