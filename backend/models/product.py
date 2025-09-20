@@ -1,3 +1,4 @@
+from datetime import datetime
 from app import db
 
 class Product(db.Model):
@@ -5,6 +6,8 @@ class Product(db.Model):
     name = db.Column(db.String(120), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float, nullable=False)
+    due_date = db.Column(db.DateTime, nullable=True)
+    status = db.Column(db.String(50), default="available")
     farmer_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     def to_dict(self):
@@ -13,5 +16,7 @@ class Product(db.Model):
             "name": self.name,
             "quantity": self.quantity,
             "price": self.price,
-            "farmer_id": self.farmer_id
+            "due_date": self.due_date.isoformat() if self.due_date else None,
+            "status": self.status,
+            "farmer_id": self.farmer_id,
         }
