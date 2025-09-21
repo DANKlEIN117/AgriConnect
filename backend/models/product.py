@@ -8,7 +8,7 @@ class Product(db.Model):
     price = db.Column(db.Float, nullable=False)
     due_date = db.Column(db.DateTime, nullable=True)
     status = db.Column(db.String(50), default="available")
-    farmer_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    farmer_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     def to_dict(self):
         return {
