@@ -5,8 +5,9 @@ from models.product import Product
 from models.user import User
 from datetime import datetime
 
-product_bp = Blueprint("product", __name__)
+product_bp = Blueprint("products", __name__)
 
+# Add Product (farmer only)
 @product_bp.route("/", methods=["POST"])
 @jwt_required()
 def add_product():
@@ -18,7 +19,7 @@ def add_product():
     name = data.get("name")
     quantity = data.get("quantity")
     price = data.get("price")
-    due_date = data.get("due_date")  # Expecting ISO format like "2025-09-25"
+    due_date = data.get("due_date")
     status = data.get("status", "available")
 
     product = Product(
@@ -35,7 +36,7 @@ def add_product():
     return jsonify({"message": "Product added successfully!"}), 201
 
 
-# ADMIN views all products
+# Admin view all products
 @product_bp.route("/all", methods=["GET"])
 @jwt_required()
 def view_all_products():
@@ -54,7 +55,7 @@ def view_all_products():
     return jsonify({"products": results}), 200
 
 
-# FARMER views their own products
+# Farmer view their products
 @product_bp.route("/mine", methods=["GET"])
 @jwt_required()
 def view_my_products():
@@ -70,7 +71,8 @@ def view_my_products():
     return jsonify({"my_products": results}), 200
 
 
-@product_bp.route("/cooperative/products", methods=["GET"])
+# Cooperative view all products
+@product_bp.route("/cooperative", methods=["GET"])
 @jwt_required()
 def cooperative_view_products():
     claims = get_jwt()
@@ -87,7 +89,8 @@ def cooperative_view_products():
 
     return jsonify({"products": results}), 200
 
-# EDIT product (only farmer who created it)
+
+# Edit product
 @product_bp.route("/<int:product_id>", methods=["PUT"])
 @jwt_required()
 def edit_product(product_id):
@@ -96,7 +99,6 @@ def edit_product(product_id):
 
     product = Product.query.get_or_404(product_id)
 
-    # Only the farmer who owns it can edit
     if claims.get("role") != "farmer" or product.farmer_id != int(user_id):
         return jsonify({"error": "Unauthorized"}), 403
 
@@ -113,7 +115,7 @@ def edit_product(product_id):
     return jsonify({"message": "Product updated successfully!"}), 200
 
 
-# DELETE product (only farmer who created it)
+# Delete product
 @product_bp.route("/<int:product_id>", methods=["DELETE"])
 @jwt_required()
 def delete_product(product_id):
@@ -129,3 +131,36 @@ def delete_product(product_id):
     db.session.commit()
     return jsonify({"message": "Product deleted successfully!"}), 200
 
+
+# Public + Filtered view
+@product_bp.route("/", methods=["GET"])
+@jwt_required(optional=True)
+def get_products():
+    query = Product.query
+
+    name = request.args.get("name")
+    status = request.args.get("status")
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+
+    if name:
+        query = query.filter(Product.name.ilike(f"%{name}%"))
+    if status:
+        query = query.filter_by(status=status)
+    if min_price is not None:
+        query = query.filter(Product.price >= min_price)
+    if max_price is not None:
+        query = query.filter(Product.price <= max_price)
+
+    products = query.all()
+
+    return jsonify([
+        {
+            "id": p.id,
+            "name": p.name,
+            "quantity": p.quantity,
+            "price": p.price,
+            "status": p.status,
+            "farmer_id": p.farmer_id
+        } for p in products
+    ])
