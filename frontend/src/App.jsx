@@ -1,21 +1,20 @@
-import Layout from "./components/Layout"
+import Navbar from "./components/Navbar";
+
 
 function App() {
   return (
-    <Layout>
-      <div className="max-w-3xl mx-auto text-center mt-10">
-        <h2 className="text-4xl font-extrabold text-green-700">
-          Welcome to AgriConnect 🌍
-        </h2>
-        <p className="mt-4 text-lg text-gray-600">
-          Connecting farmers with cooperatives and markets — for better trade, fair prices, and growth.
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <main className="p-6">
+        <h1 className="text-4xl font-bold text-green-700">
+          Welcome to AgriConnect 🚜
+        </h1>
+        <p className="mt-2 text-lg text-gray-600">
+          Connecting farmers, cooperatives, and buyers.
         </p>
-        <button className="mt-6 px-6 py-3 bg-green-600 text-white rounded-xl shadow hover:bg-green-700 transition">
-          Get Started
-        </button>
-      </div>
-    </Layout>
-  )
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
